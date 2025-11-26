@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react';
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   return {
-    base: '/lovechronicle-2025/', // cần để GitHub Pages load đúng
+    base: '/143/', // cần để GitHub Pages load đúng
     server: {
       port: 3000,
       host: '0.0.0.0',
