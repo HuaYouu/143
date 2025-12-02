@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import Timer from './components/Timer';
-import LoveEntity from './components/LoveEntity';
 import Milestones from './components/Milestones';
+import PhotoTimeline from './components/PhotoTimeline';
 import { Heart } from 'lucide-react';
 import { getRandomQuote } from './services/geminiService';
 import { Quote } from './types';
@@ -42,7 +42,7 @@ const App: React.FC = () => {
       </header>
 
       {/* Main Content */}
-      <main className="relative z-10 container mx-auto px-4 pb-20 space-y-16">
+      <main className="relative z-10 container mx-auto px-4 pb-20 space-y-20">
         
         {/* Timer Section */}
         <section className="bg-white/30 backdrop-blur-md rounded-3xl shadow-xl border border-white/50 p-2 md:p-6 transition-transform hover:scale-[1.01] duration-500">
@@ -52,6 +52,11 @@ const App: React.FC = () => {
         {/* Milestones Section */}
         <section>
           <Milestones startDate={startDate} />
+        </section>
+
+        {/* Photo Timeline Section */}
+        <section>
+          <PhotoTimeline />
         </section>
 
         {/* Quote Section (Dynamic AI Selection) */}
@@ -85,9 +90,6 @@ const App: React.FC = () => {
       <footer className="relative z-10 text-center py-6 text-gray-500 text-sm">
         <p>&copy; 2025 LoveChronicle. Được tạo bằng tình yêu.</p>
       </footer>
-
-      {/* The AI Love Entity - Floating Assistant */}
-      <LoveEntity />
     </div>
   );
 };

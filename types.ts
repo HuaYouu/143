@@ -22,3 +22,10 @@ export interface Quote {
   text: string;
   author: string;
 }
+
+export interface PhotoMemory {
+  url: string;
+  filename: string;
+  date: Date;
+  displayDate: string;
+}

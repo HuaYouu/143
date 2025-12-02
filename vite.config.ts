@@ -3,9 +3,9 @@ import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), '');
+  const env = loadEnv(mode, '.', '');
   return {
-    base: '/143/', // cần để GitHub Pages load đúng
+    base: '/143/', // ⚠️ Đảm bảo khớp với tên repo trên GitHub
     server: {
       port: 3000,
       host: '0.0.0.0',
@@ -13,12 +13,12 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     define: {
       'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-      'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
+      'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
     },
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, 'src'),
-      }
-    }
+        '@': path.resolve(__dirname, '.'),
+      },
+    },
   };
 });
