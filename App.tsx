@@ -7,6 +7,8 @@ import LoadingScreen from './components/LoadingScreen';
 import { Heart } from 'lucide-react';
 import { fetchPhotos } from './services/photoService';
 import { Quote, PhotoMemory } from './types';
+import maleImage from './assets/image/m.jpg';
+import femaleImage from './assets/image/fm.jpg';
 
 const App: React.FC = () => {
   // Relationship start date
@@ -87,7 +89,7 @@ const App: React.FC = () => {
             <div className="relative animate-float-slow z-30">
               <div className="w-24 h-24 md:w-40 md:h-40 rounded-full border-4 border-white shadow-2xl overflow-hidden ring-8 ring-blue-100/50 group transition-transform hover:scale-105 bg-white">
                 <img
-                  src="./image/m.jpg"
+                  src={maleImage}
                   alt="Nam"
                   className="w-full h-full object-cover"
                 />
@@ -99,7 +101,7 @@ const App: React.FC = () => {
             <div className="relative animate-float-delayed z-30">
               <div className="w-24 h-24 md:w-40 md:h-40 rounded-full border-4 border-white shadow-2xl overflow-hidden ring-8 ring-pink-100/50 group transition-transform hover:scale-105 bg-white">
                 <img
-                  src="./image/fm.jpg"
+                  src={femaleImage}
                   alt="Nữ"
                   className="w-full h-full object-cover"
                 />
