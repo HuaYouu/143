@@ -1,33 +1,14 @@
-import React, { useEffect, useState } from 'react';
+
+import React from 'react';
 import { PhotoMemory } from '../types';
-import { fetchPhotos } from '../services/photoService';
-import { Loader, Heart, AlertCircle } from 'lucide-react';
+import { Heart, AlertCircle } from 'lucide-react';
 
-const PhotoTimeline: React.FC = () => {
-  const [memories, setMemories] = useState<PhotoMemory[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+interface PhotoTimelineProps {
+  memories: PhotoMemory[];
+  error: string | null;
+}
 
-  useEffect(() => {
-    const loadPhotos = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const data = await fetchPhotos();
-        if (data.length === 0) {
-          setError("Không tìm thấy hình ảnh nào trong danh sách.");
-        } else {
-          setMemories(data);
-        }
-      } catch (err: any) {
-        setError(err.message || "Có lỗi xảy ra khi tải ảnh.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadPhotos();
-  }, []);
-
+const PhotoTimeline: React.FC<PhotoTimelineProps> = ({ memories, error }) => {
   const rainbowColors = [
     'border-red-400',
     'border-orange-400',
@@ -48,15 +29,6 @@ const PhotoTimeline: React.FC = () => {
     'text-purple-600',
   ];
 
-  if (loading) {
-    return (
-      <div className="flex flex-col justify-center items-center py-20 gap-4">
-        <Loader className="w-8 h-8 animate-spin text-pink-500" />
-        <span className="text-pink-500 font-medium animate-pulse">Đang kết nối kho ký ức...</span>
-      </div>
-    );
-  }
-
   if (error) {
     return (
       <div className="w-full max-w-2xl mx-auto p-8 text-center bg-red-50 rounded-2xl border border-red-200 shadow-sm">
@@ -71,13 +43,17 @@ const PhotoTimeline: React.FC = () => {
   }
 
   if (memories.length === 0) {
-    return null; 
+    return (
+      <div className="text-center py-12">
+        <p className="text-gray-400 italic">Chưa có ký ức nào được tải lên...</p>
+      </div>
+    ); 
   }
 
   return (
     <div className="w-full max-w-5xl mx-auto px-4 py-12">
       <h3 className="text-3xl font-bold text-center mb-16 font-script bg-clip-text text-transparent bg-gradient-to-r from-red-500 via-green-500 to-blue-500 animate-pulse">
-        Hành Trình Tình Yêu
+        Hành Trình Cầu Vồng
       </h3>
 
       <div className="relative">

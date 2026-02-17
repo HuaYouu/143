@@ -30,7 +30,7 @@ const Milestones: React.FC<MilestonesProps> = ({ startDate }) => {
       { days: 30, title: "1 Tháng", desc: "Tháng đầu tiên trọn vẹn" },
       { days: 100, title: "100 Ngày", desc: "Kỷ niệm 100 ngày bên nhau" },
       { days: 365, title: "1 Năm", desc: "365 ngày của yêu thương" },
-      { days: 500, title: "500 Ngày", desc: "500 mà Cảm giác cứ như ngày đầu" },
+      { days: 500, title: "500 Ngày", desc: "500 Cảm giác cứ như ngày đầu" },
       { days: 1000, title: "1000 Ngày", desc: "Một hành trình dài tuyệt đẹp" }
     ];
 
