@@ -5,7 +5,6 @@ import Milestones from './components/Milestones';
 import PhotoTimeline from './components/PhotoTimeline';
 import LoadingScreen from './components/LoadingScreen';
 import { Heart } from 'lucide-react';
-import { getRandomQuote } from './services/geminiService';
 import { fetchPhotos } from './services/photoService';
 import { Quote, PhotoMemory } from './types';
 
@@ -23,10 +22,6 @@ const App: React.FC = () => {
   useEffect(() => {
     const initializeData = async () => {
       try {
-        // 1. Get a random quote
-        setQuote(getRandomQuote());
-
-        // 2. Fetch all photos from the "database"
         const photoData = await fetchPhotos();
         setPhotos(photoData);
 
