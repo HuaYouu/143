@@ -2,9 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import Lottie from 'lottie-react';
 import loveAnimation from '../assets/love_is_blind.json';
+import { getActiveTheme } from '../ThemeContext';
 
 const LoadingScreen: React.FC = () => {
   const [loadingText, setLoadingText] = useState("Đang kết nối trái tim");
+
+  // Get theme directly (not via context since LoadingScreen renders before ThemeProvider)
+  const theme = getActiveTheme();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -18,36 +22,57 @@ const LoadingScreen: React.FC = () => {
   }, []);
 
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-gradient-to-b from-pink-50 via-rose-50 to-pink-100 overflow-hidden">
-      {/* Hiệu ứng hào quang nền (Màu hồng nhạt đồng bộ với App.tsx) */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-pink-300/20 rounded-full blur-[120px] animate-pulse"></div>
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-rose-300/10 rounded-full blur-3xl animate-pulse delay-700"></div>
+    <div
+      className="fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden"
+      style={{ background: theme.bgGradient }}
+    >
+      {/* Hiệu ứng hào quang nền */}
+      <div
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full blur-[120px] animate-pulse"
+        style={{ backgroundColor: theme.glowColor }}
+      />
+      <div
+        className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full blur-3xl animate-pulse delay-700"
+        style={{ backgroundColor: `${theme.glowColor}80` }}
+      />
 
       {/* Container Lottie Animation 200x200 */}
-      <div className="relative z-10 w-[200px] h-[200px] flex items-center justify-center rounded-full overflow-hidden shadow-[0_15px_35px_rgba(236,72,153,0.2)] bg-white/60 border-4 border-white backdrop-blur-sm group transition-transform hover:scale-105 duration-500">
-        <Lottie 
-          animationData={loveAnimation} 
-          loop={true} 
+      <div
+        className="relative z-10 w-[200px] h-[200px] flex items-center justify-center rounded-full overflow-hidden bg-white/60 border-4 border-white backdrop-blur-sm group transition-transform hover:scale-105 duration-500"
+        style={{ boxShadow: `0 15px 35px ${theme.primaryColor}30` }}
+      >
+        <Lottie
+          animationData={loveAnimation}
+          loop={true}
           className="w-full h-full scale-110"
         />
-        
-        {/* Hiệu ứng bóng đổ nhẹ phía dưới animation */}
+
         <div className="absolute inset-0 bg-gradient-to-t from-pink-500/5 to-transparent pointer-events-none"></div>
       </div>
-      
-      {/* Phần chữ thông điệp (Sử dụng font và màu sắc từ App.tsx) */}
+
+      {/* Phần chữ thông điệp */}
       <div className="mt-12 text-center z-10">
-        <h2 className="font-script text-5xl md:text-6xl text-transparent bg-clip-text bg-gradient-to-r from-rose-600 to-pink-600 mb-4 drop-shadow-sm">
+        <h2
+          className="font-script text-5xl md:text-6xl mb-4 drop-shadow-sm"
+          style={{
+            backgroundImage: `linear-gradient(to right, ${theme.primaryColor}, ${theme.accentColor})`,
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+          }}
+        >
           {loadingText}
         </h2>
-        
+
         <div className="flex justify-center gap-2 mb-8">
-          <div className="w-2.5 h-2.5 bg-rose-500 rounded-full animate-bounce [animation-delay:-0.3s] shadow-sm"></div>
-          <div className="w-2.5 h-2.5 bg-rose-400 rounded-full animate-bounce [animation-delay:-0.15s] shadow-sm"></div>
-          <div className="w-2.5 h-2.5 bg-pink-400 rounded-full animate-bounce shadow-sm"></div>
+          <div className="w-2.5 h-2.5 rounded-full animate-bounce [animation-delay:-0.3s] shadow-sm" style={{ backgroundColor: theme.primaryColor }}></div>
+          <div className="w-2.5 h-2.5 rounded-full animate-bounce [animation-delay:-0.15s] shadow-sm" style={{ backgroundColor: theme.accentColor }}></div>
+          <div className="w-2.5 h-2.5 rounded-full animate-bounce shadow-sm" style={{ backgroundColor: theme.secondaryColor }}></div>
         </div>
 
-        <p className="text-pink-800 font-medium tracking-[0.4em] uppercase text-[10px] md:text-xs opacity-60">
+        <p
+          className="font-medium tracking-[0.4em] uppercase text-[10px] md:text-xs opacity-60"
+          style={{ color: theme.textColor }}
+        >
           Khởi đầu hành trình: 14.03.2025
         </p>
       </div>
@@ -55,15 +80,16 @@ const LoadingScreen: React.FC = () => {
       {/* Hiệu ứng các hạt trái tim nhỏ bay lơ lửng */}
       <div className="absolute inset-0 pointer-events-none">
         {[...Array(15)].map((_, i) => (
-          <div 
+          <div
             key={i}
-            className="absolute text-rose-300 animate-float-heart opacity-0"
+            className="absolute animate-float-heart opacity-0"
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
               animationDuration: `${Math.random() * 6 + 4}s`,
               animationDelay: `${Math.random() * 5}s`,
-              fontSize: `${Math.random() * 10 + 10}px`
+              fontSize: `${Math.random() * 10 + 10}px`,
+              color: theme.primaryColor,
             }}
           >
             ❤
