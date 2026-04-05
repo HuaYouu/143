@@ -6,8 +6,8 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
   
   return {
-    // 1. THÊM DÒNG NÀY: Để deploy lên https://HuaYouu.github.io/143/
-    base: '/143/', 
+    // 1. THÊM DÒNG NÀY: Dành cho custom domain thì đặt là '/'
+    base: '/', 
 
     server: {
       port: 3000,
