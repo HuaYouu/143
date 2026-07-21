@@ -1,11 +1,13 @@
 
-import React, { useState, useEffect } from 'react';
-import Lottie from 'lottie-react';
-import loveAnimation from '../assets/love_is_blind.json';
+import React, { Suspense, lazy, useState, useEffect } from 'react';
+import loveAnimationUrl from '../assets/love_is_blind.json?url';
 import { getActiveTheme } from '../ThemeContext';
+
+const Lottie = lazy(() => import('lottie-react'));
 
 const LoadingScreen: React.FC = () => {
   const [loadingText, setLoadingText] = useState("Đang kết nối trái tim");
+  const [loveAnimation, setLoveAnimation] = useState<unknown | null>(null);
 
   // Get theme directly (not via context since LoadingScreen renders before ThemeProvider)
   const theme = getActiveTheme();
@@ -19,6 +21,23 @@ const LoadingScreen: React.FC = () => {
     }, 500);
 
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    fetch(loveAnimationUrl)
+      .then(response => response.json())
+      .then(animationData => {
+        if (isMounted) setLoveAnimation(animationData);
+      })
+      .catch(() => {
+        if (isMounted) setLoveAnimation(null);
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   return (
@@ -41,11 +60,17 @@ const LoadingScreen: React.FC = () => {
         className="relative z-10 w-[200px] h-[200px] flex items-center justify-center rounded-full overflow-hidden bg-white/60 border-4 border-white backdrop-blur-sm group transition-transform hover:scale-105 duration-500"
         style={{ boxShadow: `0 15px 35px ${theme.primaryColor}30` }}
       >
-        <Lottie
-          animationData={loveAnimation}
-          loop={true}
-          className="w-full h-full scale-110"
-        />
+        {loveAnimation ? (
+          <Suspense fallback={<div className="h-24 w-24 rounded-full animate-pulse" style={{ backgroundColor: `${theme.primaryColor}18` }} />}>
+            <Lottie
+              animationData={loveAnimation}
+              loop={true}
+              className="w-full h-full scale-110"
+            />
+          </Suspense>
+        ) : (
+          <div className="h-24 w-24 rounded-full animate-pulse" style={{ backgroundColor: `${theme.primaryColor}18` }} />
+        )}
 
         <div className="absolute inset-0 bg-gradient-to-t from-pink-500/5 to-transparent pointer-events-none"></div>
       </div>

@@ -1,7 +1,8 @@
-import React, { useMemo, useState, useEffect, useRef } from 'react';
+import React, { lazy, Suspense, useMemo, useState, useEffect, useRef } from 'react';
 import Timer from './components/Timer';
 import Milestones from './components/Milestones';
-import PhotoTimeline from './components/PhotoTimeline';
+import AnniversaryFocus from './components/AnniversaryFocus';
+import MilestoneLetters from './components/MilestoneLetters';
 import LoadingScreen from './components/LoadingScreen';
 import ThemeEffects from './components/ThemeEffects';
 import ThemeBanner from './components/ThemeBanner';
@@ -18,10 +19,14 @@ import {
 } from './components/ThemeDecorations';
 import { ThemeProvider, useTheme } from './ThemeContext';
 import { Heart } from 'lucide-react';
+import { relationshipStartDate } from './data/loveData';
 import { fetchPhotos } from './services/photoService';
+import { getFocusMilestoneState, isNightWaitWindow } from './services/milestoneService';
 import { Quote, PhotoMemory } from './types';
 import maleImage from './assets/image/m.jpg';
 import femaleImage from './assets/image/fm.jpg';
+
+const PhotoTimeline = lazy(() => import('./components/PhotoTimeline'));
 
 // Hidden footer: tap 5 times quickly to open Theme Switcher
 const FooterWithSecret: React.FC = () => {
@@ -80,13 +85,14 @@ const AppContent: React.FC = () => {
   const { layout } = theme;
 
   // Relationship start date
-  const startDate = useMemo(() => new Date('2025-03-14T00:00:00'), []);
+  const startDate = useMemo(() => new Date(relationshipStartDate), []);
 
   // State management
   const [isAppLoading, setIsAppLoading] = useState(true);
   const [quote, setQuote] = useState<Quote | null>(null);
   const [photos, setPhotos] = useState<PhotoMemory[]>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [currentTime, setCurrentTime] = useState(() => new Date());
 
   // Global initialization logic
   useEffect(() => {
@@ -104,10 +110,17 @@ const AppContent: React.FC = () => {
     initializeData();
   }, []);
 
+  useEffect(() => {
+    const interval = window.setInterval(() => setCurrentTime(new Date()), 60 * 1000);
+    return () => window.clearInterval(interval);
+  }, []);
+
   // Dynamic scrollbar & card styles
   const cardStyle = getCardStyle(layout.cardStyle, theme);
   const avatarStyleMale = getAvatarStyle(layout.avatarBorder, theme.primaryColor);
   const avatarStyleFemale = getAvatarStyle(layout.avatarBorder, theme.accentColor);
+  const focusState = useMemo(() => getFocusMilestoneState(startDate, currentTime), [currentTime, startDate]);
+  const isNightWait = isNightWaitWindow(focusState);
 
   const dynamicStyles = `
     ::-webkit-scrollbar-thumb {
@@ -123,7 +136,11 @@ const AppContent: React.FC = () => {
   return (
     <div
       className="min-h-screen text-gray-800 relative overflow-hidden selection:bg-pink-200"
-      style={{ background: theme.bgGradient }}
+      style={{
+        background: isNightWait
+          ? 'radial-gradient(circle at 50% 8%, rgba(251,191,36,0.18), transparent 28%), linear-gradient(to bottom, #17071a, #3a1232 52%, #120814)'
+          : theme.bgGradient,
+      }}
     >
       <style>{dynamicStyles}</style>
       <ThemeLayoutStyles />
@@ -165,9 +182,9 @@ const AppContent: React.FC = () => {
 
       <div className="animate-in">
         {/* Header / Hero Section */}
-        <header className="relative z-10 pt-16 pb-12 px-4 text-center">
+        <header className="relative z-30 flex min-h-[calc(100svh-1rem)] flex-col justify-center px-4 pb-10 pt-10 text-center md:pb-14 md:pt-12">
           <HeaderDecorationWrapper>
-            <div className="flex justify-center items-center gap-16 md:gap-48 mb-12 relative">
+            <div className="relative mb-8 flex items-center justify-center gap-16 md:mb-10 md:gap-48">
 
               {/* Avatar Nam */}
               <div className="relative animate-float-slow z-30">
@@ -210,7 +227,7 @@ const AppContent: React.FC = () => {
           </HeaderDecorationWrapper>
 
           <h1
-            className="text-5xl md:text-7xl font-script mb-4 drop-shadow-sm"
+            className="mb-3 text-5xl font-script drop-shadow-sm md:text-7xl"
             style={{
               backgroundImage: `linear-gradient(to right, ${theme.primaryColor}, ${theme.accentColor})`,
               WebkitBackgroundClip: 'text',
@@ -219,7 +236,7 @@ const AppContent: React.FC = () => {
           >
             Nhật Ký Tình Yêu
           </h1>
-          <p className="text-xl md:text-2xl font-light tracking-wide" style={{ color: theme.textMuted }}>
+          <p className="text-lg font-light tracking-wide md:text-2xl" style={{ color: isNightWait ? 'rgba(255,247,237,0.72)' : theme.textMuted }}>
             14 tháng 03
           </p>
 
@@ -232,6 +249,10 @@ const AppContent: React.FC = () => {
               {theme.name}
             </div>
           )}
+
+          <div className="mx-auto mt-8 w-full max-w-5xl text-left">
+            <AnniversaryFocus startDate={startDate} />
+          </div>
         </header>
 
         {/* Main Content */}
@@ -263,6 +284,17 @@ const AppContent: React.FC = () => {
             <Milestones startDate={startDate} />
           </section>
 
+          {/* Letters Section */}
+          <section
+            className="shadow-lg p-2 md:p-4"
+            style={{
+              ...cardStyle,
+              borderRadius: layout.cardRadius,
+            }}
+          >
+            <MilestoneLetters startDate={startDate} />
+          </section>
+
           {/* Photo Timeline Section */}
           <section
             className="shadow-lg p-2 md:p-4"
@@ -271,7 +303,9 @@ const AppContent: React.FC = () => {
               borderRadius: layout.cardRadius,
             }}
           >
-            <PhotoTimeline memories={photos} error={loadError} />
+            <Suspense fallback={<div className="py-12 text-center text-gray-500">Đang mở album kỷ niệm...</div>}>
+              <PhotoTimeline memories={photos} error={loadError} />
+            </Suspense>
           </section>
 
           {/* Quote Section */}
